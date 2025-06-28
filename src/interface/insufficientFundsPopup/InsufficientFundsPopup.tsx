@@ -126,19 +126,14 @@ const InsufficientFundsPopup = () => {
             </button>
           </div>
 
-          <div className="insufficient-funds-text">
-            How to Fund Your Wallet:
-          </div>
-
           <div className="funding-steps">
             <div className="step">1. Copy your wallet address above</div>
             <div className="step">2. Send testnet MON tokens from another wallet</div>
-            <div className="step">3. Wait for the transaction to confirm</div>
-            <div className="step">4. Click "Check Balance" below to refresh</div>
+            <div className="step">3. Click "Check Balance" below to refresh</div>
           </div>
 
           <div className="testnet-note">
-            <strong>Note:</strong> This is on Monad Testnet. You can get testnet MON from faucets or other testnet wallets.
+            <strong>Note:</strong> This is on Monad Testnet. Get testnet MON from faucets.
           </div>
 
           <div className="insufficient-funds-actions">
@@ -149,10 +144,6 @@ const InsufficientFundsPopup = () => {
             >
               {isRefreshing ? '🔄 Checking...' : '🔄 Check Balance'}
             </button>
-          </div>
-
-          <div className="insufficient-funds-text">
-            Once you have sufficient funds, you'll be able to spin again!
           </div>
         </div>
       </div>

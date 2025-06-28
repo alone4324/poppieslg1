@@ -16,10 +16,10 @@
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  width: min(85vw, 550px);
+  width: min(70vw, 450px);
   height: fit-content;
-  padding: 2vh min(8vw, 30px);
-  border-radius: 40px;
+  padding: 1.5vh min(6vw, 25px);
+  border-radius: 30px;
   z-index: 3;
   text-align: center;
   box-shadow: 0 0 20px #ffffff;
@@ -27,13 +27,13 @@
 
 .insufficient-funds-modal-main {
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
 }
 
 .insufficient-funds-title {
   font-family: 'Paytone One', sans-serif;
-  font-size: min(6vw, 40px);
-  margin: 2vh 0;
+  font-size: min(5vw, 32px);
+  margin: 1.5vh 0;
   text-align: center;
   color: #e74c3c;
   font-weight: bold;
@@ -41,19 +41,19 @@
 
 .insufficient-funds-text {
   font-family: 'Inter', sans-serif;
-  margin: 2vh 0;
+  margin: 1.5vh 0;
   text-align: center;
-  font-size: min(3vw, 18px);
-  max-width: 30ch;
+  font-size: min(2.5vw, 16px);
+  max-width: 35ch;
   margin-left: auto;
   margin-right: auto;
 }
 
 .insufficient-funds-balance {
   background: #f8f9fa;
-  border-radius: 20px;
-  padding: 2vh min(4vw, 20px);
-  margin: 2vh 0;
+  border-radius: 15px;
+  padding: 1.5vh min(3vw, 15px);
+  margin: 1.5vh 0;
   border: 2px solid #e9ecef;
 }
 
@@ -61,9 +61,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 1vh 0;
+  margin: 0.8vh 0;
   font-family: 'Inter', sans-serif;
-  font-size: min(2.5vw, 16px);
+  font-size: min(2.2vw, 14px);
 }
 
 .balance-value {
@@ -75,23 +75,23 @@
 .wallet-address-container {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background: #f8f9fa;
-  border-radius: 15px;
-  padding: 1.5vh min(3vw, 15px);
-  margin: 2vh 0;
+  border-radius: 12px;
+  padding: 1vh min(2.5vw, 12px);
+  margin: 1.5vh 0;
   border: 2px solid #e9ecef;
 }
 
 .wallet-address-text {
   flex: 1;
   font-family: 'Courier New', monospace;
-  font-size: min(2vw, 12px);
+  font-size: min(1.8vw, 11px);
   color: #495057;
   word-break: break-all;
   background: #ffffff;
-  padding: 1vh min(2vw, 10px);
-  border-radius: 8px;
+  padding: 0.8vh min(1.5vw, 8px);
+  border-radius: 6px;
   border: 1px solid #dee2e6;
 }
 
@@ -99,14 +99,14 @@
   background: #007bff;
   color: white;
   border: none;
-  padding: 1vh min(3vw, 15px);
-  border-radius: 20px;
+  padding: 0.8vh min(2.5vw, 12px);
+  border-radius: 15px;
   font-family: 'Inter', sans-serif;
-  font-size: min(2.5vw, 14px);
+  font-size: min(2.2vw, 12px);
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
-  min-width: 80px;
+  min-width: 70px;
 }
 
 .copy-button:hover {
@@ -120,46 +120,46 @@
 
 .funding-steps {
   background: #f8f9fa;
-  border-radius: 20px;
-  padding: 2vh min(4vw, 20px);
-  margin: 2vh 0;
+  border-radius: 15px;
+  padding: 1.5vh min(3vw, 15px);
+  margin: 1.5vh 0;
   border: 2px solid #e9ecef;
 }
 
 .step {
   font-family: 'Inter', sans-serif;
-  font-size: min(2.5vw, 16px);
-  margin: 1vh 0;
+  font-size: min(2.2vw, 14px);
+  margin: 0.6vh 0;
   text-align: left;
   color: #495057;
-  padding-left: 1vw;
+  padding-left: 0.8vw;
 }
 
 .testnet-note {
   background: #fff3cd;
   border: 2px solid #ffeaa7;
-  border-radius: 15px;
-  padding: 1.5vh min(3vw, 15px);
-  margin: 2vh 0;
+  border-radius: 12px;
+  padding: 1vh min(2.5vw, 12px);
+  margin: 1.5vh 0;
   font-family: 'Inter', sans-serif;
-  font-size: min(2.5vw, 14px);
+  font-size: min(2vw, 12px);
   color: #856404;
 }
 
 .insufficient-funds-actions {
   display: flex;
   justify-content: center;
-  margin: 3vh 0;
+  margin: 2vh 0;
 }
 
 .refresh-button {
   background: #28a745;
   color: white;
   border: none;
-  padding: 2vh min(6vw, 30px);
-  border-radius: 25px;
+  padding: 1.5vh min(5vw, 25px);
+  border-radius: 20px;
   font-family: 'Paytone One', sans-serif;
-  font-size: min(3vw, 18px);
+  font-size: min(2.5vw, 16px);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
