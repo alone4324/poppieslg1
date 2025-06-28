@@ -220,27 +220,9 @@ export function useBlockchainGame() {
     return '0.1 MON';
   }, [freeSpins, hasDiscount, discountedSpins]);
 
-  // Check if user has sufficient funds and close popup if they do
-  const checkAndCloseInsufficientFundsPopup = useCallback(() => {
-    const currentBalance = parseFloat(monBalance || '0');
-    const spinCost = getSpinCost();
-    
-    if (spinCost === 'Free' || 
-        (spinCost === '0.01 MON' && currentBalance >= 0.01) ||
-        (spinCost === '0.1 MON' && currentBalance >= 0.1)) {
-      // User has sufficient funds, close popup
-      setInsufficientFundsPopup(false);
-    }
-  }, [monBalance, getSpinCost, setInsufficientFundsPopup]);
-
   useEffect(() => {
     fetchState();
   }, [fetchState]);
-
-  // Check for sufficient funds whenever balance changes
-  useEffect(() => {
-    checkAndCloseInsufficientFundsPopup();
-  }, [checkAndCloseInsufficientFundsPopup]);
 
   // REAL blockchain spin function
   const spin = useCallback(async () => {
@@ -355,6 +337,7 @@ export function useBlockchainGame() {
       
       if (error.code === 'INSUFFICIENT_FUNDS') {
         console.error('❌ Insufficient MON balance');
+        console.log('🚨 Triggering insufficient funds popup');
         // Show insufficient funds popup instead of just logging
         setInsufficientFundsPopup(true);
       } else if (error.code === 'USER_REJECTED') {

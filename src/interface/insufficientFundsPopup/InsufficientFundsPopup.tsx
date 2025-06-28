@@ -14,7 +14,7 @@
  *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useGame from '../../stores/store';
 import { useBlockchainGame } from '../../hooks/useBlockchainGame';
 import './style.css';
@@ -24,6 +24,12 @@ const InsufficientFundsPopup = () => {
   const setInsufficientFundsPopup = useGame((state) => state.setInsufficientFundsPopup);
   const [copied, setCopied] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  console.log('🎭 InsufficientFundsPopup mounted with:', {
+    walletAddress,
+    monBalance,
+    spinCost: getSpinCost()
+  });
 
   const handleCopyAddress = async () => {
     if (walletAddress) {
@@ -41,6 +47,25 @@ const InsufficientFundsPopup = () => {
     setIsRefreshing(true);
     try {
       await refreshState();
+      
+      // Check if user now has sufficient funds after refresh
+      const currentBalance = parseFloat(monBalance || '0');
+      const spinCost = getSpinCost();
+      
+      console.log('🔄 After refresh - Checking funds:', {
+        currentBalance,
+        spinCost,
+        monBalance
+      });
+      
+      if (spinCost === 'Free' || 
+          (spinCost === '0.01 MON' && currentBalance >= 0.01) ||
+          (spinCost === '0.1 MON' && currentBalance >= 0.1)) {
+        console.log('✅ Sufficient funds detected after refresh, closing popup');
+        setInsufficientFundsPopup(false);
+      } else {
+        console.log('❌ Still insufficient funds after refresh');
+      }
     } catch (error) {
       console.error('Error refreshing balance:', error);
     } finally {
