@@ -57,6 +57,9 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
     getSpinCost
   } = useBlockchainGame();
 
+  // Get insufficient funds popup state
+  const insufficientFundsPopup = useGame((state) => state.insufficientFundsPopup);
+
   const reelRefs = [
     useRef<ReelGroup>(null),
     useRef<ReelGroup>(null),
@@ -76,6 +79,11 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
 
     if (gameState !== 'idle') {
       console.log('❌ Cannot spin: Game state is', gameState);
+      return;
+    }
+
+    if (insufficientFundsPopup) {
+      console.log('❌ Cannot spin: Insufficient funds popup is open');
       return;
     }
 
@@ -110,7 +118,7 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === 'Space' && gameState === 'idle' && authenticated) {
+      if (event.code === 'Space' && gameState === 'idle' && authenticated && !insufficientFundsPopup) {
         event.preventDefault();
         spinSlotMachine();
       }
@@ -118,7 +126,7 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, authenticated]);
+  }, [gameState, authenticated, insufficientFundsPopup]);
 
   // Reel animation - just for visual effect, doesn't affect outcome
   useFrame(() => {
@@ -150,12 +158,14 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
   const [textZ, setTextZ] = useState(1.6);
   const [textY, setTextY] = useState(-14);
 
-  // Can only spin when idle and authenticated
-  const canSpin = authenticated && gameState === 'idle';
+  // Can only spin when idle, authenticated, and no insufficient funds popup
+  const canSpin = authenticated && gameState === 'idle' && !insufficientFundsPopup;
 
   // Button text based on game state
   const getButtonText = () => {
     if (!authenticated) return 'CONNECT WALLET';
+    
+    if (insufficientFundsPopup) return 'INSUFFICIENT FUNDS';
     
     switch (gameState) {
       case 'spinning':

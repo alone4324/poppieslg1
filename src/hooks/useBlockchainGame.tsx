@@ -17,6 +17,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { ethers } from 'ethers';
+import useGame from '../stores/store';
 
 const SLOT_MACHINE_ABI = [
   {"inputs":[],"name":"fundContract","outputs":[],"stateMutability":"payable","type":"function"},
@@ -66,6 +67,7 @@ export const MONAD_TESTNET = {
 export function useBlockchainGame() {
   const { ready, authenticated } = usePrivy();
   const { wallets } = useWallets();
+  const setInsufficientFundsPopup = useGame((state) => state.setInsufficientFundsPopup);
 
   // Only use the Privy embedded wallet
   const privyWallet = wallets.find(w => w.walletClientType === 'privy');
@@ -114,7 +116,6 @@ export function useBlockchainGame() {
           const ethersProvider = new ethers.BrowserProvider(ethProvider, {
             name: 'monad-testnet',
             chainId: 10143,
-            ensAddress: null,
           });
           
           // Switch to Monad Testnet if needed
@@ -213,9 +214,33 @@ export function useBlockchainGame() {
     }
   }, [contract, walletAddress, provider]);
 
+  const getSpinCost = useCallback(() => {
+    if (freeSpins > 0) return 'Free';
+    if (hasDiscount && discountedSpins > 0) return '0.01 MON';
+    return '0.1 MON';
+  }, [freeSpins, hasDiscount, discountedSpins]);
+
+  // Check if user has sufficient funds and close popup if they do
+  const checkAndCloseInsufficientFundsPopup = useCallback(() => {
+    const currentBalance = parseFloat(monBalance || '0');
+    const spinCost = getSpinCost();
+    
+    if (spinCost === 'Free' || 
+        (spinCost === '0.01 MON' && currentBalance >= 0.01) ||
+        (spinCost === '0.1 MON' && currentBalance >= 0.1)) {
+      // User has sufficient funds, close popup
+      setInsufficientFundsPopup(false);
+    }
+  }, [monBalance, getSpinCost, setInsufficientFundsPopup]);
+
   useEffect(() => {
     fetchState();
   }, [fetchState]);
+
+  // Check for sufficient funds whenever balance changes
+  useEffect(() => {
+    checkAndCloseInsufficientFundsPopup();
+  }, [checkAndCloseInsufficientFundsPopup]);
 
   // REAL blockchain spin function
   const spin = useCallback(async () => {
@@ -330,6 +355,8 @@ export function useBlockchainGame() {
       
       if (error.code === 'INSUFFICIENT_FUNDS') {
         console.error('❌ Insufficient MON balance');
+        // Show insufficient funds popup instead of just logging
+        setInsufficientFundsPopup(true);
       } else if (error.code === 'USER_REJECTED') {
         console.error('❌ Transaction cancelled');
       } else if (error.message?.includes('execution reverted')) {
@@ -338,13 +365,7 @@ export function useBlockchainGame() {
       
       return null;
     }
-  }, [contract, signer, provider, freeSpins, hasDiscount, discountedSpins, networkError, fetchState, getDynamicGasSettings]);
-
-  const getSpinCost = useCallback(() => {
-    if (freeSpins > 0) return 'Free';
-    if (hasDiscount && discountedSpins > 0) return '0.01 MON';
-    return '0.1 MON';
-  }, [freeSpins, hasDiscount, discountedSpins]);
+  }, [contract, signer, provider, freeSpins, hasDiscount, discountedSpins, networkError, fetchState, getDynamicGasSettings, setInsufficientFundsPopup]);
 
   return {
     ready,

@@ -39,6 +39,10 @@ type State = {
   outcomePopup: OutcomeData | null;
   setOutcomePopup: (data: OutcomeData | null) => void;
 
+  // Insufficient Funds Popup
+  insufficientFundsPopup: boolean;
+  setInsufficientFundsPopup: (isOpen: boolean) => void;
+
   // Coins
   coins: number;
   updateCoins: (amount: number) => void;
@@ -113,6 +117,19 @@ const useGame = create<State>()(
       set(() => {
         return {
           outcomePopup: data,
+        };
+      });
+    },
+
+    /**
+     * Insufficient Funds Popup
+     * (shows when user doesn't have enough MON to spin)
+     */
+    insufficientFundsPopup: false,
+    setInsufficientFundsPopup: (isOpen: boolean) => {
+      set(() => {
+        return {
+          insufficientFundsPopup: isOpen,
         };
       });
     },

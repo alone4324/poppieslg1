@@ -20,11 +20,13 @@ import Modal from './modal/Modal';
 import HelpButton from './helpButton/HelpButton';
 import OutcomePopup from './outcomePopup/OutcomePopup';
 import WalletWidget from '../components/WalletWidget';
+import InsufficientFundsPopup from './insufficientFundsPopup/InsufficientFundsPopup';
 import './style.css';
 
 const Interface = () => {
   const modal = useGame((state) => state.modal);
   const outcomePopup = useGame((state) => state.outcomePopup);
+  const insufficientFundsPopup = useGame((state) => state.insufficientFundsPopup);
   const coins = useGame((state) => state.coins);
   const spins = useGame((state) => state.spins);
   
@@ -52,6 +54,9 @@ const Interface = () => {
           txHash={outcomePopup.txHash}
         />
       )}
+
+      {/* Insufficient Funds Popup */}
+      {insufficientFundsPopup && <InsufficientFundsPopup />}
 
       {/* Logo */}
       <a
