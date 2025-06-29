@@ -247,7 +247,86 @@
   }
 }
 
-/* Enhanced Spotlight Onboarding Navigation */
+/* Responsive Design */
+@media (max-width: 768px) {
+  .onboarding-tooltip {
+    max-width: 90vw;
+    min-width: 280px;
+    margin: 0 20px;
+  }
+  
+  .onboarding-tooltip-top {
+    top: 80px;
+  }
+  
+  .onboarding-tooltip-bottom {
+    bottom: 80px;
+  }
+  
+  .onboarding-tooltip-left,
+  .onboarding-tooltip-right {
+    left: 20px;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .onboarding-tooltip-left::before,
+  .onboarding-tooltip-right::before {
+    display: none;
+  }
+  
+  .onboarding-actions {
+    flex-direction: column;
+  }
+  
+  .onboarding-action-btn,
+  .onboarding-next-btn {
+    width: 100%;
+  }
+  
+  .onboarding-progress {
+    bottom: 20px;
+    padding: 12px 16px;
+  }
+  
+  .progress-bar {
+    width: 150px;
+  }
+}
+
+/* Focus styles for accessibility */
+.onboarding-action-btn:focus,
+.onboarding-next-btn:focus,
+.onboarding-skip-btn:focus {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+/* Highlight target elements */
+.onboarding-overlay .wallet-widget,
+.onboarding-overlay .interface,
+.onboarding-overlay .slot-machine {
+  position: relative;
+  z-index: 10000;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.5);
+  border-radius: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(52, 152, 219, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.5);
+  }
+}
+
+/* Professional Spotlight Onboarding Navigation */
 
 .onboarding-spotlight-overlay {
   position: fixed;
@@ -259,137 +338,63 @@
   pointer-events: auto;
 }
 
-/* Enhanced Blurred Background with Better Masking */
+/* Blurred Background */
 .onboarding-blur-background {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   mask: radial-gradient(
     circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
     transparent 0%,
-    transparent calc(var(--spotlight-size, 150px) / 2 - 20px),
-    rgba(0, 0, 0, 0.3) calc(var(--spotlight-size, 150px) / 2 - 10px),
-    rgba(0, 0, 0, 0.7) calc(var(--spotlight-size, 150px) / 2),
-    black calc(var(--spotlight-size, 150px) / 2 + 30px)
+    transparent calc(var(--spotlight-size, 100px) / 2),
+    black calc(var(--spotlight-size, 100px) / 2 + 1px)
   );
   -webkit-mask: radial-gradient(
     circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
     transparent 0%,
-    transparent calc(var(--spotlight-size, 150px) / 2 - 20px),
-    rgba(0, 0, 0, 0.3) calc(var(--spotlight-size, 150px) / 2 - 10px),
-    rgba(0, 0, 0, 0.7) calc(var(--spotlight-size, 150px) / 2),
-    black calc(var(--spotlight-size, 150px) / 2 + 30px)
+    transparent calc(var(--spotlight-size, 100px) / 2),
+    black calc(var(--spotlight-size, 100px) / 2 + 1px)
   );
 }
 
-/* Invisible Spotlight Container - No Visual Element */
+/* Pure Glow Effect - No Visible Shape */
 .onboarding-spotlight {
   position: absolute;
   pointer-events: none;
   z-index: 10000;
-  opacity: 0; /* Completely invisible */
-  visibility: hidden; /* Extra safety to hide the element */
+  opacity: 0; /* Hide the actual element */
 }
 
-/* Multiple Glow Layers for Enhanced Effect */
-.onboarding-spotlight-overlay::before {
-  content: '';
+.spotlight-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    /* Inner bright glow */
-    radial-gradient(
-      circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
-      rgba(105, 19, 197, 0.9) 0%,
-      rgba(105, 19, 197, 0.7) 15%,
-      rgba(59, 8, 115, 0.5) 25%,
-      rgba(105, 19, 197, 0.3) 35%,
-      transparent 50%
-    ),
-    /* Middle glow ring */
-    radial-gradient(
-      circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
-      transparent 0%,
-      transparent 30%,
-      rgba(105, 19, 197, 0.4) 40%,
-      rgba(59, 8, 115, 0.3) 50%,
-      rgba(105, 19, 197, 0.2) 60%,
-      transparent 70%
-    ),
-    /* Outer soft glow */
-    radial-gradient(
-      circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
-      transparent 0%,
-      transparent 50%,
-      rgba(105, 19, 197, 0.2) 60%,
-      rgba(59, 8, 115, 0.15) 70%,
-      rgba(105, 19, 197, 0.1) 80%,
-      transparent 90%
-    );
-  pointer-events: none;
-  z-index: 9998;
-  animation: enhancedGlowPulse 3s ease-in-out infinite;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(105, 19, 197, 0.8) 0%,
+    rgba(59, 8, 115, 0.6) 30%,
+    rgba(105, 19, 197, 0.4) 60%,
+    rgba(59, 8, 115, 0.2) 80%,
+    transparent 100%
+  );
+  animation: glowPulse 2s ease-in-out infinite;
 }
 
-/* Enhanced Pulsing Animation */
-@keyframes enhancedGlowPulse {
+@keyframes glowPulse {
   0%, 100% {
     opacity: 1;
     transform: scale(1);
-    filter: brightness(1.2) saturate(1.3);
-  }
-  25% {
-    opacity: 1.3;
-    transform: scale(1.02);
-    filter: brightness(1.5) saturate(1.5);
   }
   50% {
-    opacity: 1.1;
-    transform: scale(1.05);
-    filter: brightness(1.8) saturate(1.7);
-  }
-  75% {
-    opacity: 1.4;
-    transform: scale(1.03);
-    filter: brightness(1.6) saturate(1.6);
-  }
-}
-
-/* Additional Sparkle Effect */
-.onboarding-spotlight-overlay::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(
-      circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
-      rgba(255, 255, 255, 0.3) 0%,
-      rgba(255, 255, 255, 0.1) 10%,
-      transparent 20%
-    );
-  pointer-events: none;
-  z-index: 9999;
-  animation: sparkleEffect 2s ease-in-out infinite alternate;
-}
-
-@keyframes sparkleEffect {
-  0% {
-    opacity: 0.3;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 0.7;
+    opacity: 1.2;
     transform: scale(1.05);
   }
 }
@@ -614,34 +619,6 @@
   outline-offset: 2px;
 }
 
-/* Enhanced Target Element Highlighting */
-.onboarding-spotlight-overlay .wallet-widget {
-  position: relative;
-  z-index: 10001;
-  animation: targetElementGlow 2s ease-in-out infinite;
-}
-
-.onboarding-spotlight-overlay .interface {
-  position: relative;
-  z-index: 10001;
-  animation: targetElementGlow 2s ease-in-out infinite;
-}
-
-.onboarding-spotlight-overlay .slot-machine {
-  position: relative;
-  z-index: 10001;
-  animation: targetElementGlow 2s ease-in-out infinite;
-}
-
-@keyframes targetElementGlow {
-  0%, 100% {
-    filter: brightness(1.1) drop-shadow(0 0 10px rgba(105, 19, 197, 0.3));
-  }
-  50% {
-    filter: brightness(1.3) drop-shadow(0 0 20px rgba(105, 19, 197, 0.6));
-  }
-}
-
 /* Privy Wallet Interface Font Size Fixes - Target Specific Elements */
 [data-privy-modal],
 [data-privy-modal] * {
@@ -781,22 +758,29 @@
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Enhanced spotlight positioning with better size calculation */
-.onboarding-spotlight-overlay {
-  --spotlight-size: 200px; /* Default size */
+/* Enhanced glow effect for target elements */
+.onboarding-spotlight-overlay .wallet-widget,
+.onboarding-spotlight-overlay .interface,
+.onboarding-spotlight-overlay .slot-machine {
+  position: relative;
+  z-index: 10001;
 }
 
-/* Step-specific spotlight sizes */
-.onboarding-spotlight-overlay[data-step="0"] {
-  --spotlight-size: 280px; /* Larger for wallet widget */
-}
-
-.onboarding-spotlight-overlay[data-step="1"] {
-  --spotlight-size: 400px; /* Medium for interface area */
-}
-
-.onboarding-spotlight-overlay[data-step="2"] {
-  --spotlight-size: 350px; /* Large for slot machine */
+/* Additional visual enhancements */
+.onboarding-spotlight-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    transparent 0%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  pointer-events: none;
+  z-index: 9998;
 }
 
 /* --- PRIVY MODAL LAYOUT & FONT FIXES --- */
