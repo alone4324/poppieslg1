@@ -21,6 +21,7 @@ import HelpButton from './helpButton/HelpButton';
 import OutcomePopup from './outcomePopup/OutcomePopup';
 import WalletWidget from '../components/WalletWidget';
 import InsufficientFundsPopup from './insufficientFundsPopup/InsufficientFundsPopup';
+import OnboardingNavigation from './onboardingNavigation/OnboardingNavigation';
 import './style.css';
 
 const Interface = () => {
@@ -35,6 +36,9 @@ const Interface = () => {
 
   return (
     <>
+      {/* Onboarding Navigation */}
+      <OnboardingNavigation />
+
       {/* Wallet Widget - Top Right */}
       <WalletWidget />
 

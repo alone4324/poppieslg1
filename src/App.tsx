@@ -26,7 +26,10 @@ const App = () => {
   return (
     <>
       <Interface />
-      <Canvas camera={{ fov: 75, position: [0, 0, cameraPositionZ] }}>
+      <Canvas 
+        className="slot-machine"
+        camera={{ fov: 75, position: [0, 0, cameraPositionZ] }}
+      >
         <Game />
       </Canvas>
     </>
