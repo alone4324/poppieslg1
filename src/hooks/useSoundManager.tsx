@@ -35,151 +35,241 @@ interface SoundManager {
 export const useSoundManager = (): SoundManager => {
   const [isMuted, setIsMuted] = useState(false);
   const [masterVolume, setMasterVolumeState] = useState(0.7);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   
   // Audio refs
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
-  const spinSoundRef = useRef<HTMLAudioElement | null>(null);
-  const jackpotSoundRef = useRef<HTMLAudioElement | null>(null);
-  const winSoundRef = useRef<HTMLAudioElement | null>(null);
-  const loseSoundRef = useRef<HTMLAudioElement | null>(null);
-  const clickSoundRef = useRef<HTMLAudioElement | null>(null);
-  const whooshSoundRef = useRef<HTMLAudioElement | null>(null);
-  const errorSoundRef = useRef<HTMLAudioElement | null>(null);
-  const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize audio elements
+  // Initialize audio context and synthetic sounds
   useEffect(() => {
-    // Background music - calm casino ambient
-    backgroundMusicRef.current = new Audio('https://www.soundjay.com/misc/sounds/casino-ambience-1.mp3');
-    backgroundMusicRef.current.loop = true;
-    backgroundMusicRef.current.volume = 0.3 * masterVolume;
-
-    // Spin sound - casino wheel spinning
-    spinSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/slot-machine-1.mp3');
-    spinSoundRef.current.volume = 0.6 * masterVolume;
-
-    // Jackpot sound - big win celebration
-    jackpotSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/jackpot-1.mp3');
-    jackpotSoundRef.current.volume = 0.8 * masterVolume;
-
-    // Win sound - smaller win celebration
-    winSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3');
-    winSoundRef.current.volume = 0.5 * masterVolume;
-
-    // Lose sound - subtle disappointment
-    loseSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/fail-buzzer-02.mp3');
-    loseSoundRef.current.volume = 0.4 * masterVolume;
-
-    // Click sound - UI interactions
-    clickSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/click-1.mp3');
-    clickSoundRef.current.volume = 0.3 * masterVolume;
-
-    // Whoosh sound - navigation transitions
-    whooshSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/whoosh-1.mp3');
-    whooshSoundRef.current.volume = 0.4 * masterVolume;
-
-    // Error sound - insufficient funds, errors
-    errorSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/error-1.mp3');
-    errorSoundRef.current.volume = 0.5 * masterVolume;
-
-    // Notification sound - general notifications
-    notificationSoundRef.current = new Audio('https://www.soundjay.com/misc/sounds/notification-1.mp3');
-    notificationSoundRef.current.volume = 0.4 * masterVolume;
-
-    // Fallback to local sounds if external URLs fail
-    const setupFallbackSounds = () => {
-      // Create simple synthetic sounds as fallbacks
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      const createTone = (frequency: number, duration: number, volume: number = 0.3) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
+    const initAudioContext = () => {
+      try {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(ctx);
         
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
-      };
-
-      // Setup fallback functions
-      (window as any).fallbackSounds = {
-        spin: () => createTone(220, 1.5, 0.2),
-        jackpot: () => {
-          createTone(523, 0.3, 0.4);
-          setTimeout(() => createTone(659, 0.3, 0.4), 100);
-          setTimeout(() => createTone(784, 0.5, 0.4), 200);
-        },
-        win: () => createTone(523, 0.5, 0.3),
-        lose: () => createTone(147, 0.8, 0.2),
-        click: () => createTone(800, 0.1, 0.2),
-        whoosh: () => {
-          for (let i = 0; i < 10; i++) {
-            setTimeout(() => createTone(200 + i * 50, 0.05, 0.1), i * 20);
-          }
-        },
-        error: () => {
-          createTone(200, 0.2, 0.3);
-          setTimeout(() => createTone(150, 0.3, 0.3), 150);
-        },
-        notification: () => createTone(440, 0.3, 0.2)
-      };
+        // Resume context if suspended
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+      } catch (error) {
+        console.warn('Could not create audio context:', error);
+      }
     };
 
-    // Setup fallbacks
-    try {
-      setupFallbackSounds();
-    } catch (error) {
-      console.warn('Could not setup audio context for fallback sounds:', error);
-    }
+    initAudioContext();
+
+    // Try to load background music from multiple sources
+    const backgroundSources = [
+      'https://www.bensound.com/bensound-music/bensound-casino.mp3',
+      'https://audio.jukehost.co.uk/casino-ambient.mp3',
+      '/sounds/background.mp3' // Local fallback
+    ];
+
+    const tryLoadBackground = (sources: string[], index = 0) => {
+      if (index >= sources.length) {
+        console.warn('Could not load background music from any source');
+        return;
+      }
+
+      const audio = new Audio();
+      audio.crossOrigin = 'anonymous';
+      
+      audio.addEventListener('canplaythrough', () => {
+        backgroundMusicRef.current = audio;
+        audio.loop = true;
+        audio.volume = 0.3 * masterVolume;
+        console.log('Background music loaded successfully');
+      });
+
+      audio.addEventListener('error', () => {
+        console.warn(`Failed to load background music from: ${sources[index]}`);
+        tryLoadBackground(sources, index + 1);
+      });
+
+      audio.src = sources[index];
+      audio.load();
+    };
+
+    tryLoadBackground(backgroundSources);
 
     return () => {
-      // Cleanup
       if (backgroundMusicRef.current) {
         backgroundMusicRef.current.pause();
         backgroundMusicRef.current = null;
       }
+      if (audioContext) {
+        audioContext.close();
+      }
     };
   }, [masterVolume]);
 
-  // Play sound with fallback
-  const playSound = useCallback((audioRef: React.RefObject<HTMLAudioElement>, fallbackName: string) => {
-    if (isMuted) return;
+  // Create synthetic sounds using Web Audio API
+  const createSyntheticSound = useCallback((type: string) => {
+    if (!audioContext) return;
 
     try {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => {
-          // Fallback to synthetic sound
-          if ((window as any).fallbackSounds && (window as any).fallbackSounds[fallbackName]) {
-            (window as any).fallbackSounds[fallbackName]();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      const filterNode = audioContext.createBiquadFilter();
+      
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      const now = audioContext.currentTime;
+      const volume = masterVolume * 0.3;
+
+      switch (type) {
+        case 'spin':
+          // Spinning wheel sound - low frequency sweep
+          oscillator.frequency.setValueAtTime(100, now);
+          oscillator.frequency.exponentialRampToValueAtTime(300, now + 1.5);
+          oscillator.type = 'sawtooth';
+          filterNode.frequency.setValueAtTime(500, now);
+          filterNode.frequency.exponentialRampToValueAtTime(2000, now + 1.5);
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(volume, now + 0.1);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+          oscillator.start(now);
+          oscillator.stop(now + 1.5);
+          break;
+
+        case 'jackpot':
+          // Big celebration - ascending notes
+          const frequencies = [523, 659, 784, 1047]; // C, E, G, C
+          frequencies.forEach((freq, i) => {
+            setTimeout(() => {
+              const osc = audioContext.createOscillator();
+              const gain = audioContext.createGain();
+              osc.connect(gain);
+              gain.connect(audioContext.destination);
+              
+              osc.frequency.value = freq;
+              osc.type = 'triangle';
+              gain.gain.setValueAtTime(0, audioContext.currentTime);
+              gain.gain.linearRampToValueAtTime(volume * 0.8, audioContext.currentTime + 0.05);
+              gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+              
+              osc.start();
+              osc.stop(audioContext.currentTime + 0.5);
+            }, i * 150);
+          });
+          return;
+
+        case 'win':
+          // Pleasant win sound
+          oscillator.frequency.setValueAtTime(523, now); // C note
+          oscillator.frequency.linearRampToValueAtTime(659, now + 0.2); // E note
+          oscillator.type = 'triangle';
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(volume * 0.6, now + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+          oscillator.start(now);
+          oscillator.stop(now + 0.5);
+          break;
+
+        case 'lose':
+          // Descending disappointment sound
+          oscillator.frequency.setValueAtTime(300, now);
+          oscillator.frequency.exponentialRampToValueAtTime(150, now + 0.8);
+          oscillator.type = 'sawtooth';
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(volume * 0.4, now + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+          oscillator.start(now);
+          oscillator.stop(now + 0.8);
+          break;
+
+        case 'click':
+          // Short click sound
+          oscillator.frequency.value = 800;
+          oscillator.type = 'square';
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(volume * 0.3, now + 0.01);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+          oscillator.start(now);
+          oscillator.stop(now + 0.1);
+          break;
+
+        case 'whoosh':
+          // Whoosh sound - noise sweep
+          const bufferSize = audioContext.sampleRate * 0.5;
+          const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+          const data = buffer.getChannelData(0);
+          
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
           }
-        });
-      } else {
-        // Use fallback immediately
-        if ((window as any).fallbackSounds && (window as any).fallbackSounds[fallbackName]) {
-          (window as any).fallbackSounds[fallbackName]();
-        }
+          
+          const noise = audioContext.createBufferSource();
+          noise.buffer = buffer;
+          
+          const filter = audioContext.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(2000, now);
+          filter.frequency.exponentialRampToValueAtTime(200, now + 0.5);
+          
+          const gain = audioContext.createGain();
+          gain.gain.setValueAtTime(0, now);
+          gain.gain.linearRampToValueAtTime(volume * 0.4, now + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+          
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioContext.destination);
+          
+          noise.start(now);
+          noise.stop(now + 0.5);
+          return;
+
+        case 'error':
+          // Error buzz
+          oscillator.frequency.setValueAtTime(200, now);
+          oscillator.frequency.setValueAtTime(180, now + 0.1);
+          oscillator.frequency.setValueAtTime(200, now + 0.2);
+          oscillator.frequency.setValueAtTime(180, now + 0.3);
+          oscillator.type = 'square';
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(volume * 0.5, now + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+          oscillator.start(now);
+          oscillator.stop(now + 0.4);
+          break;
+
+        case 'notification':
+          // Pleasant notification
+          oscillator.frequency.setValueAtTime(440, now); // A note
+          oscillator.type = 'sine';
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(volume * 0.4, now + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          oscillator.start(now);
+          oscillator.stop(now + 0.3);
+          break;
+
+        default:
+          oscillator.frequency.value = 440;
+          oscillator.type = 'sine';
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(volume * 0.3, now + 0.05);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+          oscillator.start(now);
+          oscillator.stop(now + 0.2);
       }
     } catch (error) {
-      console.warn(`Could not play ${fallbackName} sound:`, error);
+      console.warn(`Could not create synthetic sound for ${type}:`, error);
     }
-  }, [isMuted]);
+  }, [audioContext, masterVolume]);
 
   const playBackgroundMusic = useCallback(() => {
-    if (isMuted || !backgroundMusicRef.current) return;
+    if (isMuted) return;
     
     try {
-      backgroundMusicRef.current.play().catch((error) => {
-        console.warn('Could not play background music:', error);
-      });
+      if (backgroundMusicRef.current) {
+        backgroundMusicRef.current.play().catch((error) => {
+          console.warn('Could not play background music:', error);
+        });
+      }
     } catch (error) {
       console.warn('Background music error:', error);
     }
@@ -192,58 +282,73 @@ export const useSoundManager = (): SoundManager => {
   }, []);
 
   const playSpinSound = useCallback(() => {
-    playSound(spinSoundRef, 'spin');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('spin');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const playJackpotSound = useCallback(() => {
-    playSound(jackpotSoundRef, 'jackpot');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('jackpot');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const playWinSound = useCallback(() => {
-    playSound(winSoundRef, 'win');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('win');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const playLoseSound = useCallback(() => {
-    playSound(loseSoundRef, 'lose');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('lose');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const playClickSound = useCallback(() => {
-    playSound(clickSoundRef, 'click');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('click');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const playWhooshSound = useCallback(() => {
-    playSound(whooshSoundRef, 'whoosh');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('whoosh');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const playErrorSound = useCallback(() => {
-    playSound(errorSoundRef, 'error');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('error');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const playNotificationSound = useCallback(() => {
-    playSound(notificationSoundRef, 'notification');
-  }, [playSound]);
+    if (!isMuted) {
+      createSyntheticSound('notification');
+    }
+  }, [isMuted, createSyntheticSound]);
 
   const setMasterVolume = useCallback((volume: number) => {
     setMasterVolumeState(volume);
     
-    // Update all audio volumes
-    if (backgroundMusicRef.current) backgroundMusicRef.current.volume = 0.3 * volume;
-    if (spinSoundRef.current) spinSoundRef.current.volume = 0.6 * volume;
-    if (jackpotSoundRef.current) jackpotSoundRef.current.volume = 0.8 * volume;
-    if (winSoundRef.current) winSoundRef.current.volume = 0.5 * volume;
-    if (loseSoundRef.current) loseSoundRef.current.volume = 0.4 * volume;
-    if (clickSoundRef.current) clickSoundRef.current.volume = 0.3 * volume;
-    if (whooshSoundRef.current) whooshSoundRef.current.volume = 0.4 * volume;
-    if (errorSoundRef.current) errorSoundRef.current.volume = 0.5 * volume;
-    if (notificationSoundRef.current) notificationSoundRef.current.volume = 0.4 * volume;
+    // Update background music volume
+    if (backgroundMusicRef.current) {
+      backgroundMusicRef.current.volume = 0.3 * volume;
+    }
   }, []);
 
   const toggleMute = useCallback(() => {
-    setIsMuted(!isMuted);
-    if (!isMuted) {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    
+    if (newMutedState) {
       stopBackgroundMusic();
     } else {
-      playBackgroundMusic();
+      // Small delay to ensure audio context is ready
+      setTimeout(() => {
+        playBackgroundMusic();
+      }, 100);
     }
   }, [isMuted, stopBackgroundMusic, playBackgroundMusic]);
 
