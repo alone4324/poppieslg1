@@ -36,32 +36,37 @@ export const useSoundManager = (): SoundManager => {
   const [isMuted, setIsMuted] = useState(false);
   const [masterVolume, setMasterVolumeState] = useState(0.7);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [isAudioInitialized, setIsAudioInitialized] = useState(false);
   
   // Audio refs
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize audio context and load background music
-  useEffect(() => {
-    const initAudioContext = () => {
-      try {
-        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-        setAudioContext(ctx);
-        
-        // Resume context if suspended
-        if (ctx.state === 'suspended') {
-          ctx.resume();
-        }
-      } catch (error) {
-        console.warn('Could not create audio context:', error);
+  // Initialize audio context only after user gesture
+  const initializeAudio = useCallback(() => {
+    if (isAudioInitialized) return;
+
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setAudioContext(ctx);
+      setIsAudioInitialized(true);
+      
+      // Resume context if suspended
+      if (ctx.state === 'suspended') {
+        ctx.resume();
       }
-    };
 
-    initAudioContext();
+      console.log('Audio context initialized after user gesture');
+    } catch (error) {
+      console.warn('Could not create audio context:', error);
+    }
+  }, [isAudioInitialized]);
 
+  // Load background music
+  useEffect(() => {
     // Load the Pixabay casino jazz music
     const backgroundSources = [
-      'https://pixabay.com/music/traditional-jazz-casino-jazz-317385/',
       'https://cdn.pixabay.com/download/audio/2024/11/07/audio_b8f8c8c8c8.mp3?filename=casino-jazz-317385.mp3',
+      'https://www.bensound.com/bensound-music/bensound-casino.mp3',
       '/sounds/background.mp3' // Local fallback
     ];
 
@@ -86,14 +91,7 @@ export const useSoundManager = (): SoundManager => {
         tryLoadBackground(sources, index + 1);
       });
 
-      // Try direct MP3 download link for Pixabay
-      if (index === 0) {
-        // Convert Pixabay page URL to direct download URL
-        audio.src = 'https://cdn.pixabay.com/download/audio/2024/11/07/audio_b8f8c8c8c8.mp3?filename=casino-jazz-317385.mp3';
-      } else {
-        audio.src = sources[index];
-      }
-      
+      audio.src = sources[index];
       audio.load();
     };
 
@@ -104,15 +102,34 @@ export const useSoundManager = (): SoundManager => {
         backgroundMusicRef.current.pause();
         backgroundMusicRef.current = null;
       }
-      if (audioContext) {
-        audioContext.close();
-      }
     };
   }, [masterVolume]);
 
+  // Set up user gesture listeners to initialize audio
+  useEffect(() => {
+    const handleUserGesture = () => {
+      initializeAudio();
+    };
+
+    // Add event listeners for first user interaction
+    const events = ['click', 'touchstart', 'keydown', 'mousedown'];
+    events.forEach(event => {
+      document.addEventListener(event, handleUserGesture, { once: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserGesture);
+      });
+    };
+  }, [initializeAudio]);
+
   // Create synthetic sounds using Web Audio API
   const createSyntheticSound = useCallback((type: string) => {
-    if (!audioContext) return;
+    if (!audioContext || !isAudioInitialized) {
+      console.warn('Audio context not initialized yet');
+      return;
+    }
 
     try {
       const oscillator = audioContext.createOscillator();
@@ -266,10 +283,10 @@ export const useSoundManager = (): SoundManager => {
     } catch (error) {
       console.warn(`Could not create synthetic sound for ${type}:`, error);
     }
-  }, [audioContext, masterVolume]);
+  }, [audioContext, masterVolume, isAudioInitialized]);
 
   const playBackgroundMusic = useCallback(() => {
-    if (isMuted) return;
+    if (isMuted || !isAudioInitialized) return;
     
     try {
       if (backgroundMusicRef.current) {
@@ -280,7 +297,7 @@ export const useSoundManager = (): SoundManager => {
     } catch (error) {
       console.warn('Background music error:', error);
     }
-  }, [isMuted]);
+  }, [isMuted, isAudioInitialized]);
 
   const stopBackgroundMusic = useCallback(() => {
     if (backgroundMusicRef.current) {
@@ -289,52 +306,52 @@ export const useSoundManager = (): SoundManager => {
   }, []);
 
   const playSpinSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('spin');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const playJackpotSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('jackpot');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const playWinSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('win');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const playLoseSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('lose');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const playClickSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('click');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const playWhooshSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('whoosh');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const playErrorSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('error');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const playNotificationSound = useCallback(() => {
-    if (!isMuted) {
+    if (!isMuted && isAudioInitialized) {
       createSyntheticSound('notification');
     }
-  }, [isMuted, createSyntheticSound]);
+  }, [isMuted, createSyntheticSound, isAudioInitialized]);
 
   const setMasterVolume = useCallback((volume: number) => {
     setMasterVolumeState(volume);
@@ -351,13 +368,13 @@ export const useSoundManager = (): SoundManager => {
     
     if (newMutedState) {
       stopBackgroundMusic();
-    } else {
+    } else if (isAudioInitialized) {
       // Small delay to ensure audio context is ready
       setTimeout(() => {
         playBackgroundMusic();
       }, 100);
     }
-  }, [isMuted, stopBackgroundMusic, playBackgroundMusic]);
+  }, [isMuted, stopBackgroundMusic, playBackgroundMusic, isAudioInitialized]);
 
   return {
     playBackgroundMusic,
