@@ -148,21 +148,42 @@
   }
 }
 
-.outcome-reward.legendary {
-  background: linear-gradient(135deg, #ff6b35, #f7931e);
+/* Poppies NFT Reward - Pink/Purple gradient */
+.outcome-reward.poppies-nft {
+  background: linear-gradient(135deg, #e91e63, #9c27b0);
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
-  animation: legendaryGlow 1.5s ease-in-out infinite alternate;
+  box-shadow: 0 6px 20px rgba(233, 30, 99, 0.5);
+  animation: poppiesGlow 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes legendaryGlow {
+@keyframes poppiesGlow {
   from { 
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+    box-shadow: 0 6px 20px rgba(233, 30, 99, 0.5);
     transform: scale(1);
   }
   to { 
-    box-shadow: 0 8px 30px rgba(255, 107, 53, 0.7);
+    box-shadow: 0 8px 30px rgba(233, 30, 99, 0.7);
+    transform: scale(1.02);
+  }
+}
+
+/* Mainnet WL Reward - Gold gradient */
+.outcome-reward.mainnet-wl {
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #2c1810;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+  animation: wlGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes wlGlow {
+  from { 
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+    transform: scale(1);
+  }
+  to { 
+    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.7);
     transform: scale(1.02);
   }
 }
@@ -188,6 +209,35 @@
   box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
 }
 
+/* WL Message styling */
+.outcome-wl-message {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 179, 71, 0.1));
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  animation: wlMessageSlideIn 0.8s ease-out;
+}
+
+.outcome-wl-message p {
+  font-family: 'Inter', sans-serif;
+  font-size: min(3.5vw, 16px);
+  color: #2c1810;
+  margin: 8px 0;
+  font-weight: 500;
+}
+
+@keyframes wlMessageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .outcome-explorer {
   margin-bottom: 20px;
   padding-top: 20px;
@@ -199,37 +249,38 @@
   color: #3b0873;
   text-decoration: none;
   font-size: min(3.5vw, 16px);
-  font-weight: 600;
-  padding: 10px 20px;
-  border: 2px solid #3b0873;
-  border-radius: 10px;
-  display: inline-block;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
   transition: all 0.3s ease;
+  display: inline-block;
   background: rgba(59, 8, 115, 0.05);
+  border: 1px solid rgba(59, 8, 115, 0.2);
 }
 
 .outcome-explorer-link:hover {
-  background: #3b0873;
-  color: white;
+  background: rgba(59, 8, 115, 0.1);
+  color: #2d0657;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 8, 115, 0.4);
+  box-shadow: 0 4px 12px rgba(59, 8, 115, 0.2);
 }
 
 .outcome-instructions {
   font-family: 'Inter', sans-serif;
   font-size: min(3vw, 14px);
-  color: #666;
+  color: #6c757d;
   font-style: italic;
   margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(59, 8, 115, 0.1);
+  padding: 10px;
+  background: rgba(108, 117, 125, 0.05);
+  border-radius: 8px;
 }
 
 /* Mobile responsiveness */
 @media (max-width: 480px) {
   .outcome-popup-box {
     width: 95vw;
-    padding: 25px 20px;
+    padding: 20px 15px;
   }
   
   .outcome-fruits {
@@ -238,18 +289,17 @@
   }
   
   .outcome-fruit-image {
-    width: min(22vw, 70px);
-    height: min(22vw, 70px);
+    width: 70px;
+    height: 70px;
   }
   
   .outcome-title {
-    font-size: 26px;
-    margin-bottom: 20px;
+    font-size: 24px;
   }
   
   .outcome-reward {
-    font-size: 18px;
-    padding: 10px 14px;
+    font-size: 16px;
+    padding: 10px 12px;
   }
   
   .outcome-combination-text {

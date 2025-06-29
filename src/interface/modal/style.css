@@ -16,45 +16,145 @@
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  width: min(85vw, 550px);
+  width: min(90vw, 600px);
   height: fit-content;
+  max-height: 80vh;
   padding: 2vh min(8vw, 30px);
   border-radius: 40px;
   z-index: 3;
   text-align: center;
   box-shadow: 0 0 20px #ffffff;
+  overflow-y: auto;
+}
+
+.modal-main {
+  width: 100%;
+}
+
+.modal-title {
+  font-family: 'Paytone One', sans-serif;
+  font-size: min(6vw, 32px);
+  color: #3b0873;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.modal-section {
+  margin: 20px 0;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(59, 8, 115, 0.1);
+}
+
+.modal-section:last-of-type {
+  border-bottom: none;
+}
+
+.modal-subtitle {
+  font-family: 'Paytone One', sans-serif;
+  font-size: min(4vw, 22px);
+  color: #3b0873;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.modal-subtitle-small {
+  font-family: 'Inter', sans-serif;
+  font-size: min(3.5vw, 18px);
+  color: #3b0873;
+  margin: 15px 0 8px 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.modal-subsection {
+  margin: 10px 0;
+  padding: 8px 0;
 }
 
 .modal-text {
   font-family: 'Inter', sans-serif;
-  margin: 2vh 0;
-  text-align: left;
-  font-size: min(3vw, 18px);
+  margin: 8px 0;
   text-align: center;
-  max-width: 30ch;
+  font-size: min(3vw, 16px);
+  line-height: 1.4;
+}
+
+.modal-text.nft-reward {
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.1), rgba(156, 39, 176, 0.1));
+  border: 1px solid rgba(233, 30, 99, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-weight: 500;
 }
 
 .modal-image {
-  width: min(5vw, 37px);
-  margin: min(0.1em, 4px);
+  width: min(4vw, 30px);
+  height: min(4vw, 30px);
+  margin: 0 4px;
+  vertical-align: middle;
 }
 
 .modal-license {
   font-size: min(2vw, 12px);
 }
 
-span {
-  font-size: min(6vw, 40px);
+.highlight {
+  font-weight: bold;
+  color: #3b0873;
+  background: rgba(59, 8, 115, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.modal-footer {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(59, 8, 115, 0.1);
+}
+
+.modal-footer .modal-text {
+  margin: 5px 0;
+  font-size: min(2.5vw, 14px);
 }
 
 a,
 a:active,
 a:visited {
   text-decoration: none;
-  color: #000;
-  font-size: min(3vw, 20px);
+  color: #3b0873;
+  font-size: min(3vw, 16px);
+  transition: color 0.3s ease;
 }
 
 a:hover {
   text-decoration: underline;
+  color: #2d0657;
+}
+
+@media (max-width: 480px) {
+  .modal-box {
+    width: 95vw;
+    padding: 15px 20px;
+    max-height: 85vh;
+  }
+  
+  .modal-title {
+    font-size: 24px;
+  }
+  
+  .modal-subtitle {
+    font-size: 18px;
+  }
+  
+  .modal-text {
+    font-size: 14px;
+  }
+  
+  .modal-image {
+    width: 25px;
+    height: 25px;
+  }
 }

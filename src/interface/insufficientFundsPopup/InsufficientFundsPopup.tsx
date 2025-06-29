@@ -14,7 +14,7 @@
  *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import useGame from '../../stores/store';
 import { useBlockchainGame } from '../../hooks/useBlockchainGame';
 import './style.css';

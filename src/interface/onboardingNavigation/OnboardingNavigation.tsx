@@ -19,7 +19,7 @@ const OnboardingNavigation = () => {
   const [canProceed, setCanProceed] = useState(false);
   const [hasStartedOnboarding, setHasStartedOnboarding] = useState(false);
   const { authenticated } = usePrivy();
-  const { phase, start, end, setInsufficientFundsPopup } = useGame();
+  const { setInsufficientFundsPopup } = useGame();
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const steps: OnboardingStep[] = [

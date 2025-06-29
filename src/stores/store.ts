@@ -23,7 +23,8 @@ interface OutcomeData {
   combination: string[];
   monReward: string;
   extraSpins: number;
-  nftMinted: boolean;
+  poppiesNftWon: boolean;
+  rarestPending: boolean;
   txHash: string;
 }
 

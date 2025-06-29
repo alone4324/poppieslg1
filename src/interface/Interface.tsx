@@ -54,7 +54,8 @@ const Interface = () => {
           combination={outcomePopup.combination}
           monReward={outcomePopup.monReward}
           extraSpins={outcomePopup.extraSpins}
-          nftMinted={outcomePopup.nftMinted}
+          poppiesNftWon={outcomePopup.poppiesNftWon}
+          rarestPending={outcomePopup.rarestPending}
           txHash={outcomePopup.txHash}
         />
       )}

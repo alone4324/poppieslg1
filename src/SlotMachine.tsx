@@ -26,8 +26,6 @@ import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import useGame from './stores/store';
 import { useBlockchainGame } from './hooks/useBlockchainGame';
-import devLog from './utils/functions/devLog';
-import { WHEEL_SEGMENT } from './utils/constants';
 import Reel from './Reel';
 import Button from './Button';
 
@@ -43,7 +41,6 @@ interface SlotMachineProps {
 }
 
 const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
-  const phase = useGame((state) => state.phase);
   const start = useGame((state) => state.start);
   const end = useGame((state) => state.end);
   const addSpin = useGame((state) => state.addSpin);
@@ -68,7 +65,6 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
 
   // Game state management
   const [gameState, setGameState] = useState<'idle' | 'spinning' | 'waiting-for-popup'>('idle');
-  const [stoppedReels, setStoppedReels] = useState(0);
 
   // Main spin function - shows popup immediately with blockchain results
   const spinSlotMachine = async () => {
@@ -94,7 +90,6 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
     
     // Start UI immediately
     start();
-    setStoppedReels(0);
     addSpin();
 
     // Start blockchain spin and get result
@@ -105,7 +100,14 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
       
       // Show popup immediately with blockchain results
       setGameState('waiting-for-popup');
-      setOutcomePopup(blockchainResult);
+      setOutcomePopup({
+        combination: blockchainResult.combination,
+        monReward: blockchainResult.monReward,
+        extraSpins: blockchainResult.extraSpins,
+        poppiesNftWon: blockchainResult.poppiesNftWon,
+        rarestPending: blockchainResult.rarestPending,
+        txHash: blockchainResult.txHash
+      });
       
       // End the spinning phase
       end();

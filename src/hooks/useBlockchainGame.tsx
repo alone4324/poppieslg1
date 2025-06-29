@@ -18,27 +18,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { ethers } from 'ethers';
 import useGame from '../stores/store';
-
-const SLOT_MACHINE_ABI = [
-  {"inputs":[],"name":"fundContract","outputs":[],"stateMutability":"payable","type":"function"},
-  {"inputs":[],"name":"spin","outputs":[],"stateMutability":"payable","type":"function"},
-  {"inputs":[{"internalType":"address","name":"_nftContract","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
-  {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newBalance","type":"uint256"}],"name":"RewardPoolUpdated","type":"event"},
-  {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"string","name":"combination","type":"string"},{"indexed":false,"internalType":"uint256","name":"monReward","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"extraSpins","type":"uint256"},{"indexed":false,"internalType":"bool","name":"discountApplied","type":"bool"},{"indexed":false,"internalType":"bool","name":"newDiscountGranted","type":"bool"},{"indexed":false,"internalType":"bool","name":"nftMinted","type":"bool"}],"name":"SpinResult","type":"event"},
-  {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
-  {"inputs":[],"name":"DISCOUNTED_SPIN_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"discountedSpins","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"freeSpins","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"getRewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasDiscount","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"nftContract","outputs":[{"internalType":"contract CherryCharmNFT","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"RARE_NFT_PROBABILITY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"rewardPool","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  {"inputs":[],"name":"SPIN_COST","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-];
-
-const SLOT_MACHINE_ADDRESS = '0xc66f746F6Bbef6533c6cd9AE73B290237c228cE5';
+import { SLOT_MACHINE_ADDRESS, SLOT_MACHINE_ABI } from '../utils/constants';
 
 // Monad Testnet configuration - Chain ID 10143
 export const MONAD_TESTNET = {
@@ -86,23 +66,68 @@ export function useBlockchainGame() {
   const [networkError, setNetworkError] = useState<boolean>(false);
 
   // Gas settings for Monad testnet
-  const getDynamicGasSettings = useCallback(async (provider: ethers.BrowserProvider) => {
-    try {
+  const getDynamicGasSettings = useCallback(async () => {
+    if (!provider) {
+      console.warn('⚠️ No provider available for gas estimation');
       return {
-        gasLimit: 1000000,
-        maxFeePerGas: ethers.parseUnits('1000', 'gwei'),
-        maxPriorityFeePerGas: ethers.parseUnits('500', 'gwei')
-      };
-    } catch (error) {
-      console.warn('⚠️ Failed to get gas settings, using ultra-high fallback:', error);
-      
-      return {
-        gasLimit: 1000000,
-        maxFeePerGas: ethers.parseUnits('2000', 'gwei'),
-        maxPriorityFeePerGas: ethers.parseUnits('1000', 'gwei')
+        gasLimit: 300000,
+        maxFeePerGas: ethers.parseUnits('50', 'gwei'), // Higher fallback for Monad
+        maxPriorityFeePerGas: ethers.parseUnits('2', 'gwei')
       };
     }
-  }, []);
+
+    try {
+      console.log('🔍 Getting current network gas prices...');
+      
+      // Get current network fee data
+      const feeData = await provider.getFeeData();
+      console.log('📊 Current network fee data:', {
+        gasPrice: feeData.gasPrice ? ethers.formatUnits(feeData.gasPrice, 'gwei') + ' gwei' : 'N/A',
+        maxFeePerGas: feeData.maxFeePerGas ? ethers.formatUnits(feeData.maxFeePerGas, 'gwei') + ' gwei' : 'N/A',
+        maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ? ethers.formatUnits(feeData.maxPriorityFeePerGas, 'gwei') + ' gwei' : 'N/A'
+      });
+
+      // Use network fee data with reasonable multipliers for Monad testnet
+      let maxFeePerGas = ethers.parseUnits('50', 'gwei'); // Default for Monad
+      let maxPriorityFeePerGas = ethers.parseUnits('2', 'gwei'); // Default for Monad
+      
+      if (feeData.maxFeePerGas) {
+        maxFeePerGas = feeData.maxFeePerGas * 120n / 100n; // 20% buffer
+      }
+      if (feeData.maxPriorityFeePerGas) {
+        maxPriorityFeePerGas = feeData.maxPriorityFeePerGas * 120n / 100n; // 20% buffer
+      }
+
+      // Ensure minimum values for Monad testnet
+      const minMaxFee = ethers.parseUnits('20', 'gwei');
+      const minPriorityFee = ethers.parseUnits('1', 'gwei');
+      
+      if (maxFeePerGas < minMaxFee) maxFeePerGas = minMaxFee;
+      if (maxPriorityFeePerGas < minPriorityFee) maxPriorityFeePerGas = minPriorityFee;
+
+      const gasSettings = {
+        gasLimit: 300000,
+        maxFeePerGas,
+        maxPriorityFeePerGas
+      };
+
+      console.log('✅ Using Monad-optimized gas settings:', {
+        gasLimit: gasSettings.gasLimit,
+        maxFeePerGas: ethers.formatUnits(gasSettings.maxFeePerGas, 'gwei') + ' gwei',
+        maxPriorityFeePerGas: ethers.formatUnits(gasSettings.maxPriorityFeePerGas, 'gwei') + ' gwei'
+      });
+
+      return gasSettings;
+    } catch (error) {
+      console.warn('⚠️ Failed to get dynamic gas settings, using Monad fallback:', error);
+      
+      return {
+        gasLimit: 300000,
+        maxFeePerGas: ethers.parseUnits('50', 'gwei'), // Higher for Monad testnet
+        maxPriorityFeePerGas: ethers.parseUnits('2', 'gwei')
+      };
+    }
+  }, [provider]);
 
   // Initialize provider, signer, and contract when Privy wallet is ready
   useEffect(() => {
@@ -249,7 +274,7 @@ export function useBlockchainGame() {
       console.log(`📊 Current state - Free: ${freeSpins}, Discounted: ${discountedSpins}, HasDiscount: ${hasDiscount}`);
       
       // Get gas settings
-      const gasSettings = await getDynamicGasSettings(provider);
+      const gasSettings = await getDynamicGasSettings();
       
       const txParams = {
         value: cost,
@@ -294,7 +319,15 @@ export function useBlockchainGame() {
       }
       
       if (spinResultEvent) {
-        const { combination, monReward, extraSpins, nftMinted, discountApplied, newDiscountGranted } = spinResultEvent.args;
+        const { 
+          combination, 
+          monReward, 
+          extraSpins, 
+          poppiesNftWon, 
+          rarestPending, 
+          discountApplied, 
+          newDiscountGranted 
+        } = spinResultEvent.args;
         
         // Parse combination into fruit array
         const fruits = combination.split('|');
@@ -304,7 +337,8 @@ export function useBlockchainGame() {
           combination: fruits,
           monReward: rewardAmount,
           extraSpins: Number(extraSpins),
-          nftMinted,
+          poppiesNftWon, // New: Poppies NFT won
+          rarestPending, // New: Poppies Mainnet WL pending
           discountApplied,
           newDiscountGranted,
           txHash: receipt.hash
@@ -314,7 +348,8 @@ export function useBlockchainGame() {
           combination: fruits.join(' | '),
           monReward: rewardAmount + ' MON',
           extraSpins: Number(extraSpins),
-          nftMinted: nftMinted ? 'YES' : 'NO',
+          poppiesNftWon: poppiesNftWon ? 'YES' : 'NO',
+          rarestPending: rarestPending ? 'YES' : 'NO',
           discountApplied: discountApplied ? 'YES' : 'NO',
           newDiscountGranted: newDiscountGranted ? 'YES' : 'NO',
           txHash: receipt.hash

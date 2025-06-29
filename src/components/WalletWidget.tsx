@@ -20,11 +20,11 @@ import { useBlockchainGame } from '../hooks/useBlockchainGame';
 import './WalletWidget.css';
 
 const WalletWidget = () => {
-  const { authenticated, user } = usePrivy();
+  const { authenticated } = usePrivy();
   const { login } = useLogin();
   const { logout } = useLogout();
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   const {
     walletAddress,
     monBalance,
@@ -62,11 +62,8 @@ const WalletWidget = () => {
         <div className="wallet-balance">
           {parseFloat(monBalance || '0').toFixed(3)} MON
         </div>
-        <div className={`wallet-arrow ${isExpanded ? 'expanded' : ''}`}>
-          ▼
-        </div>
+        <div className={`wallet-arrow ${isExpanded ? 'expanded' : ''}`}>▼</div>
       </div>
-      
       {isExpanded && (
         <div className="wallet-details">
           <div className="wallet-detail-row">

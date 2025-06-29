@@ -35,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           showWalletUIs: false, // ✅ Hide wallet UI prompts
           priceDisplay: {
             primary: 'native-token',
-            secondary: 'fiat-currency',
+            secondary: null,
           },
         },
         // ✅ Additional settings to prevent transaction approval prompts
@@ -51,11 +51,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         },
         supportedChains: [MONAD_TESTNET],
         defaultChain: MONAD_TESTNET,
-        // ✅ Session configuration for seamless transactions
-        session: {
-          sameSite: 'lax',
-          secure: true,
-        },
         // ✅ Additional wallet configuration
         walletConnectCloudProjectId: undefined, // Disable WalletConnect
         solanaClusters: [], // Disable Solana

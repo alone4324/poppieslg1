@@ -23,11 +23,12 @@ interface OutcomePopupProps {
   combination: string[];
   monReward: string;
   extraSpins: number;
-  nftMinted: boolean;
+  poppiesNftWon: boolean;
+  rarestPending: boolean;
   txHash: string;
 }
 
-const OutcomePopup = ({ combination, monReward, extraSpins, nftMinted, txHash }: OutcomePopupProps) => {
+const OutcomePopup = ({ combination, monReward, extraSpins, poppiesNftWon, rarestPending, txHash }: OutcomePopupProps) => {
   const { setOutcomePopup } = useGame();
 
   const explorerUrl = `${MONAD_TESTNET.blockExplorers.default.url}/tx/${txHash}`;
@@ -64,8 +65,12 @@ const OutcomePopup = ({ combination, monReward, extraSpins, nftMinted, txHash }:
   const getRewardText = () => {
     const rewards = [];
     
-    if (nftMinted) {
-      rewards.push('🎉 LEGENDARY NFT WON! 🍒🍒🍒');
+    if (poppiesNftWon) {
+      rewards.push('🎉 RARE POPPIES NFT WON! 🌸');
+    }
+    
+    if (rarestPending) {
+      rewards.push('🏆 POPPIES MAINNET WL PENDING! 🎫');
     }
     
     if (parseFloat(monReward) > 0) {
@@ -127,7 +132,8 @@ const OutcomePopup = ({ combination, monReward, extraSpins, nftMinted, txHash }:
               <div 
                 key={index} 
                 className={`outcome-reward ${
-                  reward.includes('LEGENDARY') ? 'legendary' :
+                  reward.includes('RARE POPPIES NFT') ? 'poppies-nft' :
+                  reward.includes('MAINNET WL') ? 'mainnet-wl' :
                   reward.includes('Won:') && reward.includes('MON') ? 'mon-reward' :
                   reward.includes('Free Spins') ? 'free-spins' :
                   'no-reward'
@@ -137,6 +143,14 @@ const OutcomePopup = ({ combination, monReward, extraSpins, nftMinted, txHash }:
               </div>
             ))}
           </div>
+          
+          {/* Special message for WL winners */}
+          {rarestPending && (
+            <div className="outcome-wl-message">
+              <p>🎫 Your wallet address has been recorded for the Poppies Mainnet Whitelist!</p>
+              <p>We'll contact you when the mainnet launch is ready.</p>
+            </div>
+          )}
           
           {/* Explorer link */}
           <div className="outcome-explorer">
