@@ -58,8 +58,8 @@ const OnboardingNavigation = () => {
     }
   ];
 
-  // Calculate spotlight position based on target element
-  const updateSpotlightPosition = (targetSelector: string) => {
+  // Calculate spotlight position based on target element with enhanced sizing
+  const updateSpotlightPosition = (targetSelector: string, stepIndex: number) => {
     const targetElement = document.querySelector(targetSelector);
     if (targetElement && overlayRef.current) {
       const rect = targetElement.getBoundingClientRect();
@@ -67,20 +67,38 @@ const OnboardingNavigation = () => {
       
       const x = rect.left - overlayRect.left + rect.width / 2;
       const y = rect.top - overlayRect.top + rect.height / 2;
-      const size = Math.max(rect.width, rect.height) + 40;
+      
+      // Enhanced size calculation based on step
+      let baseSize = Math.max(rect.width, rect.height);
+      let finalSize;
+      
+      switch (stepIndex) {
+        case 0: // Wallet widget
+          finalSize = Math.max(baseSize + 120, 280);
+          break;
+        case 1: // Interface area
+          finalSize = Math.max(baseSize + 200, 400);
+          break;
+        case 2: // Slot machine
+          finalSize = Math.max(baseSize + 150, 350);
+          break;
+        default:
+          finalSize = baseSize + 100;
+      }
       
       setSpotlightPosition({
         x,
         y,
-        width: rect.width + 40,
-        height: rect.height + 40
+        width: rect.width + 80,
+        height: rect.height + 80
       });
 
-      // Set CSS custom properties for mask effect
+      // Set CSS custom properties for enhanced mask effect
       if (overlayRef.current) {
         overlayRef.current.style.setProperty('--spotlight-x', `${x}px`);
         overlayRef.current.style.setProperty('--spotlight-y', `${y}px`);
-        overlayRef.current.style.setProperty('--spotlight-size', `${size}px`);
+        overlayRef.current.style.setProperty('--spotlight-size', `${finalSize}px`);
+        overlayRef.current.setAttribute('data-step', stepIndex.toString());
       }
     }
   };
@@ -112,15 +130,24 @@ const OnboardingNavigation = () => {
   useEffect(() => {
     if (isVisible && currentStep < steps.length) {
       const currentStepData = steps[currentStep];
-      updateSpotlightPosition(currentStepData.target);
+      updateSpotlightPosition(currentStepData.target, currentStep);
       
       // Update position on window resize
       const handleResize = () => {
-        updateSpotlightPosition(currentStepData.target);
+        updateSpotlightPosition(currentStepData.target, currentStep);
       };
       
       window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
+      
+      // Also update position periodically to catch dynamic changes
+      const interval = setInterval(() => {
+        updateSpotlightPosition(currentStepData.target, currentStep);
+      }, 1000);
+      
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        clearInterval(interval);
+      };
     }
   }, [currentStep, isVisible]);
 
@@ -172,12 +199,12 @@ const OnboardingNavigation = () => {
 
   return (
     <>
-      {/* Spotlight Overlay */}
-      <div ref={overlayRef} className="onboarding-spotlight-overlay">
-        {/* Blurred Background */}
+      {/* Enhanced Spotlight Overlay */}
+      <div ref={overlayRef} className="onboarding-spotlight-overlay" data-step={currentStep}>
+        {/* Enhanced Blurred Background with Multiple Glow Layers */}
         <div className="onboarding-blur-background"></div>
         
-        {/* Spotlight */}
+        {/* Invisible Spotlight Container */}
         <div 
           className="onboarding-spotlight"
           style={{
@@ -187,9 +214,7 @@ const OnboardingNavigation = () => {
             height: `${spotlightPosition.height}px`,
             transform: 'translate(-50%, -50%)'
           }}
-        >
-          <div className="spotlight-glow"></div>
-        </div>
+        ></div>
 
         {/* Navigation Card */}
         <div className="onboarding-navigation-card">
@@ -241,4 +266,4 @@ const OnboardingNavigation = () => {
   );
 };
 
-export default OnboardingNavigation; 
+export default OnboardingNavigation;
