@@ -1,0 +1,843 @@
+/* Onboarding Navigation Styles */
+
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+.onboarding-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+
+.onboarding-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  max-width: 400px;
+  min-width: 320px;
+  color: white;
+  font-family: 'Arial', sans-serif;
+  animation: tooltipSlideIn 0.4s ease-out;
+}
+
+.onboarding-tooltip::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 12px solid transparent;
+}
+
+.onboarding-tooltip-top {
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.onboarding-tooltip-top::before {
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: #34495e;
+}
+
+.onboarding-tooltip-bottom {
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.onboarding-tooltip-bottom::before {
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: #34495e;
+}
+
+.onboarding-tooltip-left {
+  left: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.onboarding-tooltip-left::before {
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: #34495e;
+}
+
+.onboarding-tooltip-right {
+  right: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.onboarding-tooltip-right::before {
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: #34495e;
+}
+
+.onboarding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.onboarding-step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.step-number {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.step-total {
+  color: #bdc3c7;
+  font-size: 14px;
+}
+
+.onboarding-skip-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #bdc3c7;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.onboarding-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.onboarding-title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ecf0f1;
+}
+
+.onboarding-description {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #bdc3c7;
+}
+
+.onboarding-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.onboarding-action-btn,
+.onboarding-next-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.onboarding-action-btn {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+}
+
+.onboarding-action-btn:hover {
+  background: linear-gradient(135deg, #2980b9, #1f5f8b);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.onboarding-next-btn {
+  background: linear-gradient(135deg, #27ae60, #229954);
+  color: white;
+}
+
+.onboarding-next-btn:hover {
+  background: linear-gradient(135deg, #229954, #1e8449);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.onboarding-progress {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: rgba(44, 62, 80, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+  width: 200px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e74c3c, #f39c12, #f1c40f, #27ae60);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  color: #ecf0f1;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Animations */
+@keyframes tooltipSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .onboarding-tooltip {
+    max-width: 90vw;
+    min-width: 280px;
+    margin: 0 20px;
+  }
+  
+  .onboarding-tooltip-top {
+    top: 80px;
+  }
+  
+  .onboarding-tooltip-bottom {
+    bottom: 80px;
+  }
+  
+  .onboarding-tooltip-left,
+  .onboarding-tooltip-right {
+    left: 20px;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .onboarding-tooltip-left::before,
+  .onboarding-tooltip-right::before {
+    display: none;
+  }
+  
+  .onboarding-actions {
+    flex-direction: column;
+  }
+  
+  .onboarding-action-btn,
+  .onboarding-next-btn {
+    width: 100%;
+  }
+  
+  .onboarding-progress {
+    bottom: 20px;
+    padding: 12px 16px;
+  }
+  
+  .progress-bar {
+    width: 150px;
+  }
+}
+
+/* Focus styles for accessibility */
+.onboarding-action-btn:focus,
+.onboarding-next-btn:focus,
+.onboarding-skip-btn:focus {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+/* Highlight target elements */
+.onboarding-overlay .wallet-widget,
+.onboarding-overlay .interface,
+.onboarding-overlay .slot-machine {
+  position: relative;
+  z-index: 10000;
+  box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.5);
+  border-radius: 8px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(52, 152, 219, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.5);
+  }
+}
+
+/* Professional Spotlight Onboarding Navigation */
+
+.onboarding-spotlight-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+/* Blurred Background */
+.onboarding-blur-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mask: radial-gradient(
+    circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    transparent 0%,
+    transparent calc(var(--spotlight-size, 100px) / 2),
+    black calc(var(--spotlight-size, 100px) / 2 + 1px)
+  );
+  -webkit-mask: radial-gradient(
+    circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    transparent 0%,
+    transparent calc(var(--spotlight-size, 100px) / 2),
+    black calc(var(--spotlight-size, 100px) / 2 + 1px)
+  );
+}
+
+/* Pure Glow Effect - No Visible Shape */
+.onboarding-spotlight {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0; /* Hide the actual element */
+}
+
+.spotlight-glow {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(105, 19, 197, 0.8) 0%,
+    rgba(59, 8, 115, 0.6) 30%,
+    rgba(105, 19, 197, 0.4) 60%,
+    rgba(59, 8, 115, 0.2) 80%,
+    transparent 100%
+  );
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1.2;
+    transform: scale(1.05);
+  }
+}
+
+/* Navigation Card */
+.onboarding-navigation-card {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #2c1b4e 0%, #3b0873 50%, #6913c5 100%);
+  border: 2px solid rgba(105, 19, 197, 0.5);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(105, 19, 197, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: cardSlideUp 0.6s ease-out;
+  font-family: 'Paytone One', sans-serif;
+}
+
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Navigation Header */
+.navigation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.step-progress {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.step-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(105, 19, 197, 0.5);
+  transition: all 0.3s ease;
+}
+
+.step-dot.active {
+  background: linear-gradient(135deg, #6913c5, #3b0873);
+  border-color: #6913c5;
+  box-shadow: 0 0 10px rgba(105, 19, 197, 0.5);
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.step-counter {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.skip-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-family: 'Paytone One', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.skip-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.skip-button:active {
+  animation: buttonGlow 0.3s ease-out;
+}
+
+/* Navigation Content */
+.navigation-content {
+  margin-bottom: 24px;
+}
+
+.step-title {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.step-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Navigation Actions */
+.navigation-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.action-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Paytone One', sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button.primary {
+  background: linear-gradient(135deg, #6913c5, #3b0873);
+  color: white;
+  box-shadow: 0 4px 15px rgba(105, 19, 197, 0.4);
+}
+
+.action-button.primary:hover {
+  background: linear-gradient(135deg, #7a1dd8, #4a0a8a);
+  box-shadow: 0 6px 20px rgba(105, 19, 197, 0.6);
+}
+
+.action-button.primary:active {
+  animation: buttonGlow 0.3s ease-out;
+}
+
+.action-button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.action-button.secondary:hover:not(.disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.action-button.secondary:active:not(.disabled) {
+  animation: buttonGlow 0.3s ease-out;
+}
+
+/* Disabled state */
+.action-button.secondary.disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-button.secondary.disabled:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Glow effect for all buttons */
+@keyframes buttonGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* Focus states for accessibility */
+.action-button:focus,
+.skip-button:focus {
+  outline: 2px solid #6913c5;
+  outline-offset: 2px;
+}
+
+/* Privy Wallet Interface Font Size Fixes - Target Specific Elements */
+[data-privy-modal],
+[data-privy-modal] * {
+  font-size: 12px !important;
+}
+
+/* 1. Submit Button - Target the specific span with Submit text */
+[data-privy-modal] span:contains("Submit"),
+[data-privy-modal] .StyledSpan-sc-eba15c9-0,
+[data-privy-modal] span[class*="StyledSpan"],
+[data-privy-modal] button span,
+[data-privy-modal] button[type="submit"] span,
+[data-privy-modal] button[type="submit"] {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+}
+
+/* 2. Email Input - Target the specific email span */
+[data-privy-modal] .BoldWrappingSpan-sc-463c12b2-6,
+[data-privy-modal] span[class*="BoldWrappingSpan"],
+[data-privy-modal] span[class*="gLMCUX"],
+[data-privy-modal] span:contains("@"),
+[data-privy-modal] span[class*="email"],
+[data-privy-modal] span[class*="Email"] {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+/* 3. "Didn't get an email?" - Target the specific span */
+[data-privy-modal] span:contains("Didn't get an email?"),
+[data-privy-modal] span:contains("didn't get an email?"),
+[data-privy-modal] span:contains("Didn't get"),
+[data-privy-modal] span:contains("didn't get"),
+[data-privy-modal] a span:contains("Didn't get"),
+[data-privy-modal] a span:contains("didn't get"),
+[data-privy-modal] a:contains("Didn't get"),
+[data-privy-modal] a:contains("didn't get") {
+  font-size: 9px !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Make sure the "Didn't get an email?" link is centered */
+[data-privy-modal] a:contains("Didn't get"),
+[data-privy-modal] a:contains("didn't get") {
+  text-align: center !important;
+  display: block !important;
+  width: 100% !important;
+  font-size: 9px !important;
+  text-decoration: none !important;
+}
+
+/* Additional specific targeting */
+[data-privy-modal] p,
+[data-privy-modal] span,
+[data-privy-modal] div,
+[data-privy-modal] label {
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+[data-privy-modal] h1,
+[data-privy-modal] h2,
+[data-privy-modal] h3,
+[data-privy-modal] h4,
+[data-privy-modal] h5,
+[data-privy-modal] h6 {
+  font-size: 13px !important;
+  line-height: 1.2 !important;
+  font-weight: 600 !important;
+}
+
+/* Target specific Privy elements */
+[data-privy-modal] [role="dialog"],
+[data-privy-modal] [role="presentation"] {
+  font-size: 11px !important;
+}
+
+[data-privy-modal] form,
+[data-privy-modal] form * {
+  font-size: 11px !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .onboarding-navigation-card {
+    bottom: 20px;
+    padding: 24px;
+    width: 95%;
+  }
+  
+  .step-title {
+    font-size: 20px;
+  }
+  
+  .step-description {
+    font-size: 14px;
+  }
+  
+  .navigation-actions {
+    flex-direction: column;
+  }
+  
+  .action-button {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .step-progress {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .onboarding-navigation-card {
+    padding: 20px;
+  }
+  
+  .step-title {
+    font-size: 18px;
+  }
+  
+  .step-description {
+    font-size: 13px;
+  }
+}
+
+/* Smooth transitions for spotlight movement */
+.onboarding-spotlight {
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced glow effect for target elements */
+.onboarding-spotlight-overlay .wallet-widget,
+.onboarding-spotlight-overlay .interface,
+.onboarding-spotlight-overlay .slot-machine {
+  position: relative;
+  z-index: 10001;
+}
+
+/* Additional visual enhancements */
+.onboarding-spotlight-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    transparent 0%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* --- PRIVY MODAL LAYOUT & FONT FIXES --- */
+
+/* Force the email line to wrap and not overflow */
+[data-privy-modal] p {
+  white-space: normal !important;
+  word-break: break-all !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  font-family: Arial, sans-serif !important;
+  margin: 0 0 8px 0 !important;
+  text-align: center !important;
+  line-height: 1.4 !important;
+}
+
+/* Make the email span normal size and weight */
+[data-privy-modal] .BoldWrappingSpan-sc-463c12b2-6,
+[data-privy-modal] span[class*="BoldWrappingSpan"],
+[data-privy-modal] span[class*="gLMCUX"] {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: Arial, sans-serif !important;
+  letter-spacing: normal !important;
+  word-break: break-all !important;
+}
+
+/* Make the help text smaller and center it below the OTP */
+[data-privy-modal] .HelpText-sc-463c12b2-3,
+[data-privy-modal] .HelpText-sc-463c12b2-3 span {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  font-family: Arial, sans-serif !important;
+  text-align: center !important;
+  margin-top: 8px !important;
+  display: block !important;
+  width: 100% !important;
+  line-height: 1.3 !important;
+}
+
+/* Make the resend button smaller and inline */
+[data-privy-modal] .ResendButtonContainer-sc-463c12b2-4 button {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 2px 8px !important;
+  margin-left: 4px !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+/* Make OTP input boxes smaller and not stretch the container */
+[data-privy-modal] .CodeInput-sc-463c12b2-1 input {
+  width: 32px !important;
+  height: 40px !important;
+  font-size: 18px !important;
+  margin: 0 2px !important;
+  text-align: center !important;
+}
+
+/* --- END PRIVY MODAL LAYOUT & FONT FIXES --- */ 
