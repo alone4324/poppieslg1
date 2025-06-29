@@ -20,4 +20,14 @@ export default defineConfig({
   optimizeDeps: {
     include: ['buffer'],
   },
+  resolve: {
+    alias: {
+      buffer: 'buffer',
+      util: 'util',
+    },
+  },
+  // Fix Node.js polyfills for browser compatibility
+  esbuild: {
+    target: 'esnext',
+  },
 });

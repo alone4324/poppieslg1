@@ -63,16 +63,19 @@ export const useSoundManager = (): SoundManager => {
 
   // Load background music
   useEffect(() => {
-    // Load the Pixabay casino jazz music
+    // Use CORS-friendly audio sources
     const backgroundSources = [
-      'https://cdn.pixabay.com/download/audio/2024/11/07/audio_b8f8c8c8c8.mp3?filename=casino-jazz-317385.mp3',
-      'https://www.bensound.com/bensound-music/bensound-casino.mp3',
-      '/sounds/background.mp3' // Local fallback
+      // Use a royalty-free casino music from a CORS-friendly source
+      'https://www.soundjay.com/misc/sounds/casino-ambience-1.mp3',
+      // Fallback to a simple tone generator for casino ambience
+      'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT'
     ];
 
     const tryLoadBackground = (sources: string[], index = 0) => {
       if (index >= sources.length) {
-        console.warn('Could not load background music from any source');
+        console.warn('Could not load background music from any source - using synthetic audio');
+        // Create a simple background tone using Web Audio API
+        createBackgroundTone();
         return;
       }
 
@@ -83,16 +86,47 @@ export const useSoundManager = (): SoundManager => {
         backgroundMusicRef.current = audio;
         audio.loop = true;
         audio.volume = 0.3 * masterVolume;
-        console.log('Casino jazz background music loaded successfully');
+        console.log('Casino background music loaded successfully');
       });
 
       audio.addEventListener('error', (e) => {
-        console.warn(`Failed to load background music from: ${sources[index]}`, e);
+        console.warn(`Failed to load background music from: ${sources[index]}`);
         tryLoadBackground(sources, index + 1);
       });
 
       audio.src = sources[index];
       audio.load();
+    };
+
+    // Create synthetic background tone if external sources fail
+    const createBackgroundTone = () => {
+      if (!isAudioInitialized || !audioContext) return;
+      
+      try {
+        // Create a simple ambient casino-like background tone
+        const oscillator1 = audioContext.createOscillator();
+        const oscillator2 = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator1.frequency.setValueAtTime(220, audioContext.currentTime); // A3
+        oscillator2.frequency.setValueAtTime(330, audioContext.currentTime); // E4
+        
+        oscillator1.type = 'sine';
+        oscillator2.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.05 * masterVolume, audioContext.currentTime);
+        
+        oscillator1.connect(gainNode);
+        oscillator2.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator1.start();
+        oscillator2.start();
+        
+        console.log('Using synthetic background ambience');
+      } catch (error) {
+        console.warn('Could not create synthetic background tone:', error);
+      }
     };
 
     tryLoadBackground(backgroundSources);
@@ -103,7 +137,7 @@ export const useSoundManager = (): SoundManager => {
         backgroundMusicRef.current = null;
       }
     };
-  }, [masterVolume]);
+  }, [masterVolume, isAudioInitialized, audioContext]);
 
   // Set up user gesture listeners to initialize audio
   useEffect(() => {
@@ -291,7 +325,7 @@ export const useSoundManager = (): SoundManager => {
     try {
       if (backgroundMusicRef.current) {
         backgroundMusicRef.current.play().catch((error) => {
-          console.warn('Could not play casino jazz background music:', error);
+          console.warn('Could not play background music:', error);
         });
       }
     } catch (error) {
