@@ -14,12 +14,15 @@
  *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
+import { useEffect } from 'react';
 import useGame from '../stores/store';
 import { useBlockchainGame } from '../hooks/useBlockchainGame';
+import { useSoundManager } from '../hooks/useSoundManager';
 import Modal from './modal/Modal';
 import HelpButton from './helpButton/HelpButton';
 import OutcomePopup from './outcomePopup/OutcomePopup';
 import WalletWidget from '../components/WalletWidget';
+import SoundControls from '../components/SoundControls';
 import InsufficientFundsPopup from './insufficientFundsPopup/InsufficientFundsPopup';
 import OnboardingNavigation from './onboardingNavigation/OnboardingNavigation';
 import './style.css';
@@ -34,8 +37,31 @@ const Interface = () => {
   // Get blockchain state for display
   const { monBalance, authenticated } = useBlockchainGame();
 
+  // Sound management
+  const { playBackgroundMusic, playErrorSound } = useSoundManager();
+
+  // Start background music when component mounts
+  useEffect(() => {
+    // Small delay to ensure user interaction has occurred
+    const timer = setTimeout(() => {
+      playBackgroundMusic();
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [playBackgroundMusic]);
+
+  // Play error sound when insufficient funds popup opens
+  useEffect(() => {
+    if (insufficientFundsPopup) {
+      playErrorSound();
+    }
+  }, [insufficientFundsPopup, playErrorSound]);
+
   return (
     <>
+      {/* Sound Controls - Top Left */}
+      <SoundControls />
+
       {/* Onboarding Navigation */}
       <OnboardingNavigation />
 

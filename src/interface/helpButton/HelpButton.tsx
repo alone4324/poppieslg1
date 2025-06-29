@@ -15,12 +15,15 @@
  */
 
 import useGame from '../../stores/store';
+import { useSoundManager } from '../../hooks/useSoundManager';
 import './style.css';
 
 const HelpButton = () => {
   const { setModal } = useGame();
+  const { playClickSound } = useSoundManager();
 
   const handleHelp = () => {
+    playClickSound();
     setModal(true);
   };
 

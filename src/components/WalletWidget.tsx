@@ -17,6 +17,7 @@
 import { useState } from 'react';
 import { usePrivy, useLogin, useLogout } from '@privy-io/react-auth';
 import { useBlockchainGame } from '../hooks/useBlockchainGame';
+import { useSoundManager } from '../hooks/useSoundManager';
 import './WalletWidget.css';
 
 const WalletWidget = () => {
@@ -36,14 +37,32 @@ const WalletWidget = () => {
     refreshState,
   } = useBlockchainGame();
 
+  const { playClickSound, playNotificationSound } = useSoundManager();
+
   const handleRefresh = () => {
+    playClickSound();
     refreshState();
+  };
+
+  const handleLogin = () => {
+    playClickSound();
+    login();
+  };
+
+  const handleLogout = () => {
+    playClickSound();
+    logout();
+  };
+
+  const handleExpand = () => {
+    playClickSound();
+    setIsExpanded(!isExpanded);
   };
 
   if (!authenticated) {
     return (
       <div className="wallet-widget">
-        <button className="wallet-login-btn" onClick={login}>
+        <button className="wallet-login-btn" onClick={handleLogin}>
           Connect Wallet
         </button>
       </div>
@@ -54,7 +73,7 @@ const WalletWidget = () => {
     <div className="wallet-widget">
       <div 
         className="wallet-header" 
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleExpand}
       >
         <div className="wallet-address">
           {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : 'Loading...'}
@@ -86,7 +105,7 @@ const WalletWidget = () => {
             <button className="wallet-refresh-btn" onClick={handleRefresh}>
               🔄 Refresh
             </button>
-            <button className="wallet-logout-btn" onClick={logout}>
+            <button className="wallet-logout-btn" onClick={handleLogout}>
               Disconnect
             </button>
           </div>

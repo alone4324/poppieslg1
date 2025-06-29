@@ -26,6 +26,7 @@ import { Text } from '@react-three/drei';
 import * as THREE from 'three';
 import useGame from './stores/store';
 import { useBlockchainGame } from './hooks/useBlockchainGame';
+import { useSoundManager } from './hooks/useSoundManager';
 import Reel from './Reel';
 import Button from './Button';
 
@@ -53,6 +54,15 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
     authenticated, 
     getSpinCost
   } = useBlockchainGame();
+
+  // Sound integration
+  const { 
+    playSpinSound, 
+    playJackpotSound, 
+    playWinSound, 
+    playLoseSound,
+    playClickSound 
+  } = useSoundManager();
 
   // Get insufficient funds popup state
   const insufficientFundsPopup = useGame((state) => state.insufficientFundsPopup);
@@ -85,6 +95,9 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
 
     console.log('🚀 Starting blockchain spin');
     
+    // Play click sound for button press
+    playClickSound();
+    
     // Lock the game state
     setGameState('spinning');
     
@@ -92,11 +105,29 @@ const SlotMachine = forwardRef(({ value }: SlotMachineProps, ref) => {
     start();
     addSpin();
 
+    // Play spin sound
+    playSpinSound();
+
     // Start blockchain spin and get result
     const blockchainResult = await blockchainSpin();
     
     if (blockchainResult) {
       console.log('🎯 Blockchain result received:', blockchainResult);
+      
+      // Determine what sound to play based on result
+      const monReward = parseFloat(blockchainResult.monReward);
+      const hasNFT = blockchainResult.poppiesNftWon || blockchainResult.rarestPending;
+      
+      if (hasNFT || monReward >= 0.3) {
+        // Big win - jackpot sound
+        playJackpotSound();
+      } else if (monReward > 0 || blockchainResult.extraSpins > 0) {
+        // Small win - win sound
+        playWinSound();
+      } else {
+        // No win - lose sound
+        playLoseSound();
+      }
       
       // Show popup immediately with blockchain results
       setGameState('waiting-for-popup');

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import useGame from '../../stores/store';
+import { useSoundManager } from '../../hooks/useSoundManager';
 import './style.css';
 
 interface OnboardingStep {
@@ -22,6 +23,9 @@ const OnboardingNavigation = () => {
   const { setInsufficientFundsPopup } = useGame();
   const overlayRef = useRef<HTMLDivElement>(null);
 
+  // Sound integration
+  const { playWhooshSound, playClickSound, playNotificationSound } = useSoundManager();
+
   const steps: OnboardingStep[] = [
     {
       id: 1,
@@ -30,6 +34,7 @@ const OnboardingNavigation = () => {
       target: ".wallet-widget",
       spotlightPosition: { x: 0, y: 0, width: 0, height: 0 },
       action: () => {
+        playClickSound();
         if (!authenticated) {
           const loginBtn = document.querySelector('.wallet-login-btn') as HTMLButtonElement;
           if (loginBtn) {
@@ -45,6 +50,7 @@ const OnboardingNavigation = () => {
       target: ".interface",
       spotlightPosition: { x: 0, y: 0, width: 0, height: 0 },
       action: () => {
+        playClickSound();
         // Open the insufficient funds popup to show funding instructions
         setInsufficientFundsPopup(true);
       }
@@ -91,6 +97,7 @@ const OnboardingNavigation = () => {
       setIsVisible(true);
       setCurrentStep(0);
       setCanProceed(false);
+      playNotificationSound(); // Welcome sound
     } else if (!authenticated && hasStartedOnboarding) {
       // Keep navigation visible if onboarding was started
       setIsVisible(true);
@@ -98,7 +105,7 @@ const OnboardingNavigation = () => {
       // Keep navigation visible if wallet connects during onboarding
       setIsVisible(true);
     }
-  }, [authenticated, hasStartedOnboarding]);
+  }, [authenticated, hasStartedOnboarding, playNotificationSound]);
 
   // Enable next button when wallet is connected
   useEffect(() => {
@@ -127,16 +134,20 @@ const OnboardingNavigation = () => {
   const handleNext = () => {
     if (!canProceed) return; // Prevent proceeding if wallet not connected
     
+    playWhooshSound(); // Navigation sound
+    
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       // Complete onboarding and hide navigation
       setIsVisible(false);
       setHasStartedOnboarding(false);
+      playNotificationSound(); // Completion sound
     }
   };
 
   const handleSkip = () => {
+    playClickSound();
     // Hide navigation and reset onboarding state
     setIsVisible(false);
     setHasStartedOnboarding(false);
@@ -157,6 +168,7 @@ const OnboardingNavigation = () => {
     setIsVisible(true);
     setCanProceed(false);
     setHasStartedOnboarding(false);
+    playNotificationSound();
   };
 
   useEffect(() => {

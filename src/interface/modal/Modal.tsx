@@ -15,13 +15,20 @@
  */
 
 import useGame from '../../stores/store';
+import { useSoundManager } from '../../hooks/useSoundManager';
 import './style.css';
 
 const Modal = () => {
   const { setModal } = useGame();
+  const { playWhooshSound } = useSoundManager();
+
+  const handleClose = () => {
+    playWhooshSound();
+    setModal(false);
+  };
 
   return (
-    <div className="modal" onClick={() => setModal(false)}>
+    <div className="modal" onClick={handleClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="modal-main">
           <div className="modal-title">🎰 Poppies Slot Machine</div>

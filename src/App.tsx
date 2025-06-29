@@ -14,7 +14,7 @@
  *  https://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import Interface from './interface/Interface';
 import Game from './Game';
@@ -22,6 +22,31 @@ import Game from './Game';
 const App = () => {
   const [windowWidth] = useState(window.innerWidth);
   const cameraPositionZ = windowWidth > 500 ? 30 : 40;
+
+  // Enable audio context on first user interaction
+  useEffect(() => {
+    const enableAudio = () => {
+      // Resume audio context if it's suspended
+      if (typeof window !== 'undefined' && 'AudioContext' in window) {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+      }
+    };
+
+    // Add event listeners for first user interaction
+    const events = ['click', 'touchstart', 'keydown'];
+    events.forEach(event => {
+      document.addEventListener(event, enableAudio, { once: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, enableAudio);
+      });
+    };
+  }, []);
 
   return (
     <>
