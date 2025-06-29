@@ -40,7 +40,7 @@ export const useSoundManager = (): SoundManager => {
   // Audio refs
   const backgroundMusicRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize audio context and synthetic sounds
+  // Initialize audio context and load background music
   useEffect(() => {
     const initAudioContext = () => {
       try {
@@ -58,10 +58,10 @@ export const useSoundManager = (): SoundManager => {
 
     initAudioContext();
 
-    // Try to load background music from multiple sources
+    // Load the Pixabay casino jazz music
     const backgroundSources = [
-      'https://www.bensound.com/bensound-music/bensound-casino.mp3',
-      'https://audio.jukehost.co.uk/casino-ambient.mp3',
+      'https://pixabay.com/music/traditional-jazz-casino-jazz-317385/',
+      'https://cdn.pixabay.com/download/audio/2024/11/07/audio_b8f8c8c8c8.mp3?filename=casino-jazz-317385.mp3',
       '/sounds/background.mp3' // Local fallback
     ];
 
@@ -78,15 +78,22 @@ export const useSoundManager = (): SoundManager => {
         backgroundMusicRef.current = audio;
         audio.loop = true;
         audio.volume = 0.3 * masterVolume;
-        console.log('Background music loaded successfully');
+        console.log('Casino jazz background music loaded successfully');
       });
 
-      audio.addEventListener('error', () => {
-        console.warn(`Failed to load background music from: ${sources[index]}`);
+      audio.addEventListener('error', (e) => {
+        console.warn(`Failed to load background music from: ${sources[index]}`, e);
         tryLoadBackground(sources, index + 1);
       });
 
-      audio.src = sources[index];
+      // Try direct MP3 download link for Pixabay
+      if (index === 0) {
+        // Convert Pixabay page URL to direct download URL
+        audio.src = 'https://cdn.pixabay.com/download/audio/2024/11/07/audio_b8f8c8c8c8.mp3?filename=casino-jazz-317385.mp3';
+      } else {
+        audio.src = sources[index];
+      }
+      
       audio.load();
     };
 
@@ -267,7 +274,7 @@ export const useSoundManager = (): SoundManager => {
     try {
       if (backgroundMusicRef.current) {
         backgroundMusicRef.current.play().catch((error) => {
-          console.warn('Could not play background music:', error);
+          console.warn('Could not play casino jazz background music:', error);
         });
       }
     } catch (error) {
